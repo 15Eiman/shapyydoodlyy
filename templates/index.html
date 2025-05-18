@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+<head>
+    <title>ShapiiDoodlyy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --card-bg: #ffffff;
+            --shadow-color: rgba(0,0,0,0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --text-color: #ffffff;
+            --card-bg: #2d2d2d;
+            --shadow-color: rgba(0,0,0,0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Righteous', 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+            overflow-x: hidden;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(
+                to right,
+                #FF416C,
+                #FF4B2B,
+                #7F00FF,
+                #E100FF,
+                #12C2E9
+            );
+            background-size: 500% 100%;
+            padding: 25px 20px 35px;
+            text-align: center;
+            position: relative;
+            animation: gradient 15s linear infinite;
+            box-shadow: 
+                0 2px 10px var(--shadow-color),
+                0 4px 20px rgba(0,0,0,0.4);
+            clip-path: polygon(
+                0% 0%,
+                100% 0%,
+                100% 85%,
+                75% 100%,
+                25% 100%,
+                0% 85%
+            );
+            margin-bottom: 30px;
+        }
+
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3), transparent);
+            z-index: -1;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 3.2em;
+            color: white;
+            text-shadow: 
+                2px 2px 0 #FF416C,
+                -2px -2px 0 #12C2E9,
+                4px 4px 8px rgba(127, 0, 255, 0.6),
+                -4px -4px 8px rgba(225, 0, 255, 0.6);
+            letter-spacing: 2px;
+            transform: perspective(500px) rotateX(10deg);
+        }
+
+        .header h1 span {
+            display: inline-block;
+            animation: bounce 2s ease-in-out infinite;
+            color: white;
+        }
+
+        .header h1 span:nth-child(odd) {
+            animation-delay: 0.1s;
+            text-shadow: 
+                2px 2px 0 #FF416C,
+                -2px -2px 0 #12C2E9,
+                4px 4px 8px rgba(127, 0, 255, 0.6),
+                -4px -4px 8px rgba(225, 0, 255, 0.6);
+        }
+
+        .header h1 span:nth-child(even) {
+            animation-delay: 0.2s;
+            text-shadow: 
+                -2px 2px 0 #7F00FF,
+                2px -2px 0 #E100FF,
+                4px 4px 8px rgba(255, 65, 108, 0.6),
+                -4px -4px 8px rgba(18, 194, 233, 0.6);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .header p {
+            color: white;
+            margin: 10px 0 0;
+            font-size: 1.1em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .theme-toggle {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2em;
+            padding: 10px;
+            border-radius: 50%;
+            backdrop-filter: blur(5px);
+            background: rgba(255,255,255,0.1);
+        }
+
+        .drawing-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 40px;
+            padding: 20px;
+            margin: 0 auto;
+            max-width: 1200px;
+            width: 100%;
+            flex-wrap: wrap;
+            overflow: visible;
+        }
+
+        .canvas-section {
+            flex: 0 1 auto;
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-right: 40px;
+        }
+
+        .prediction-section {
+            flex: 0 1 320px;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            margin-top: 60px;
+            height: fit-content;
+        }
+
+        .canvas-wrapper {
+            width: 400px;
+            height: 400px;
+            padding: 4px;
+            background: linear-gradient(45deg, #FF416C, #FF4B2B, #7F00FF, #E100FF, #12C2E9);
+            border-radius: 12px;
+            box-shadow: 
+                0 0 30px var(--shadow-color),
+                0 0 60px rgba(255,105,180,0.3),
+                inset 0 0 20px rgba(255,255,255,0.3),
+                0 10px 20px rgba(0,0,0,0.4);
+            animation: glow 3s ease-in-out infinite alternate;
+        }
+
+        #canvas {
+            width: 100%;
+            height: 100%;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            display: block;
+        }
+
+        .color-picker {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 25px;
+            backdrop-filter: blur(5px);
+            justify-content: center;
+        }
+
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid white;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+
+        .color-option.active {
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+            transform: scale(1.1);
+        }
+
+        .button-container {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--shadow-color);
+        }
+
+        .confidence-bars {
+            width: 100%;
+            margin-top: 20px;
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+
+        .confidence-bar {
+            margin: 15px 0;
+        }
+
+        .bar-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+
+        .bar-container {
+            width: 100%;
+            height: 20px;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4ecdc4, #45b649);
+            transition: width 0.3s ease;
+        }
+
+        #prediction {
+            font-size: 24px;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            background-color: var(--card-bg);
+            box-shadow: 0 4px 15px var(--shadow-color);
+            color: var(--text-color);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">☀️</button>
+        <h1>
+            <span>S</span><span>h</span><span>a</span><span>P</span><span>y</span><span>y</span><span>y</span>
+            <span>D</span><span>o</span><span>O</span><span>d</span><span>l</span><span>Y</span><span>y</span><span>y</span><span>y</span>
+        </h1>
+        <p>✨ Draw a shape and let AI guess what it is! ✨</p>
+    </div>
+
+    <div class="drawing-container">
+        <div class="canvas-section">
+            <div class="color-picker">
+                <div class="color-option active" style="background-color: #000000" onclick="setColor('#000000')"></div>
+                <div class="color-option" style="background-color: #ff6b6b" onclick="setColor('#ff6b6b')"></div>
+                <div class="color-option" style="background-color: #4ecdc4" onclick="setColor('#4ecdc4')"></div>
+                <div class="color-option" style="background-color: #45b649" onclick="setColor('#45b649')"></div>
+                <div class="color-option" style="background-color: #f7d794" onclick="setColor('#f7d794')"></div>
+            </div>
+
+            <div class="canvas-wrapper">
+                <canvas id="canvas" width="400" height="400"></canvas>
+            </div>
+
+            <div class="button-container">
+                <button onclick="clearCanvas()">Clear</button>
+                <button onclick="predict()">Predict Shape</button>
+            </div>
+        </div>
+
+        <div class="prediction-section">
+            <div id="prediction"></div>
+            <div class="confidence-bars" id="confidenceBars"></div>
+        </div>
+    </div>
+
+    <script>
+        // Theme Toggle Functionality
+        function toggleTheme() {
+            const root = document.documentElement;
+            const themeButton = document.getElementById('themeToggle');
+            
+            if (root.getAttribute('data-theme') === 'dark') {
+                root.removeAttribute('data-theme');
+                themeButton.textContent = '🌙';
+            } else {
+                root.setAttribute('data-theme', 'dark');
+                themeButton.textContent = '☀️';
+            }
+        }
+
+        // Initialize theme state on page load
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const root = document.documentElement;
+            const themeButton = document.getElementById('themeToggle');
+            themeButton.textContent = root.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙';
+        });
+
+        // Canvas Setup and Drawing Functionality
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+        
+        // Set canvas size
+        canvas.width = 400;
+        canvas.height = 400;
+        
+        // Set up canvas
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 8;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
+        function setColor(color) {
+            ctx.strokeStyle = color;
+            // Update active color in picker
+            document.querySelectorAll('.color-option').forEach(option => {
+                option.classList.remove('active');
+                if (option.style.backgroundColor === color) {
+                    option.classList.add('active');
+                }
+            });
+        }
+
+        // Drawing event listeners
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+        canvas.addEventListener('touchstart', handleTouch);
+        canvas.addEventListener('touchmove', handleTouch);
+        canvas.addEventListener('touchend', stopDrawing);
+
+        function handleTouch(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent(e.type === 'touchstart' ? 'mousedown' : 'mousemove', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            canvas.dispatchEvent(mouseEvent);
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            [lastX, lastY] = getCoordinates(e);
+        }
+
+        function getCoordinates(e) {
+            const rect = canvas.getBoundingClientRect();
+            return [
+                e.clientX - rect.left,
+                e.clientY - rect.top
+            ];
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            
+            const [x, y] = getCoordinates(e);
+            
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            
+            [lastX, lastY] = [x, y];
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        function clearCanvas() {
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            document.getElementById('prediction').textContent = '';
+            document.getElementById('confidenceBars').innerHTML = '';
+        }
+
+        function updateConfidenceBars(confidenceScores) {
+            const container = document.getElementById('confidenceBars');
+            container.innerHTML = '';
+            
+            const sortedShapes = Object.entries(confidenceScores)
+                .sort((a, b) => b[1] - a[1]);
+            
+            for (const [shape, confidence] of sortedShapes) {
+                const percentage = (confidence * 100).toFixed(1);
+                const barHtml = `
+                    <div class="confidence-bar">
+                        <div class="bar-label">
+                            <span>${shape}</span>
+                            <span>${percentage}%</span>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += barHtml;
+            }
+        }
+
+        function predict() {
+            const imageData = canvas.toDataURL('image/png');
+            
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    image: imageData
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('prediction').textContent = 
+                        `Error: ${data.error}`;
+                } else {
+                    document.getElementById('prediction').textContent = 
+                        `Predicted Shape: ${data.prediction}`;
+                    updateConfidenceBars(data.confidence_scores);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('prediction').textContent = 
+                    'Error making prediction';
+            });
+        }
+
+        // Initialize white canvas
+        clearCanvas();
+    </script>
+</body>
+</html> 
